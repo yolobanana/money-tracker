@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { registerUser } from "@/app/actions/register";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { useActionState } from "react";
 
 function SubmitButton() {

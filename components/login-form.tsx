@@ -17,25 +17,36 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { signInWithCredentials, signInWithGoogle } from "@/app/actions/auth";
-import { useActionState } from "react";
 import Link from "next/link";
-import { useFormStatus } from "react-dom";
+import React, { useState, useTransition } from "react";
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
-    const [state, action] = useActionState(signInWithCredentials, {});
-    const { pending: isPending } = useFormStatus();
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState<string | null>(null);
 
-    const SignInButton = () => {
-        const { pending } = useFormStatus();
-        return (
-            <Button type="submit" disabled={pending}>
-                {pending ? "Signing account..." : "Log In"}
-            </Button>
-        );
-    };
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setError(null);
+
+        const form = new FormData(e.currentTarget);
+        const data = {
+            email: String(form.get("email") ?? "").trim(),
+            password: String(form.get("password") ?? ""),
+        };
+
+        startTransition(async () => {
+            const res = await signInWithCredentials(data);
+            if (res?.error) {
+                setError(res.error);
+            } else {
+                // successful sign in — redirect (adjust path as desired)
+                window.location.href = "/dashboard";
+            }
+        });
+    }
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -47,7 +58,7 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={action}>
+                    <form onSubmit={handleSubmit}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -79,13 +90,17 @@ export function LoginForm({
                                     required
                                 />
                             </Field>
-                            {state?.error && (
+                            {error && (
                                 <FieldDescription className="text-sm text-red-500 text-center">
-                                    {state.error}
+                                    {error}
                                 </FieldDescription>
                             )}
                             <Field>
-                                <SignInButton />
+                                <Button type="submit" disabled={isPending}>
+                                    {isPending
+                                        ? "Signing account..."
+                                        : "Log In"}
+                                </Button>
                                 <Button
                                     variant="outline"
                                     type="button"

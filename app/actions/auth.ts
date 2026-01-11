@@ -2,13 +2,16 @@
 
 import { signInSchema } from "@/schemas/auth.schema";
 import { signIn, signOut } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export async function signInWithCredentials(
     data: unknown
 ): Promise<{ error?: string }> {
+    console.log("Signing in with credentials", data);
     const parsed = signInSchema.safeParse(data);
 
     if (!parsed.success) {
+        console.log(parsed.error);
         return { error: `Invalid input` };
     }
 
@@ -41,4 +44,5 @@ export async function signInWithGoogle() {
 
 export async function logout() {
     await signOut({});
+    redirect("/");
 }
