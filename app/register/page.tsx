@@ -1,8 +1,8 @@
-import { LoginForm } from "@/components/login-form";
+import { RegisterForm } from "@/components/register-form";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function RegisterPage() {
     const user = await getCurrentUser();
     if (user) {
         redirect("/dashboard");
@@ -12,7 +12,7 @@ export default async function Home() {
             <main className="flex min-h-screen w-full flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
                 <div className="flex w-full items-center justify-center p-6 md:p-10">
                     <div className="w-full max-w-sm">
-                        <LoginForm />
+                        <RegisterForm />
                     </div>
                 </div>
             </main>

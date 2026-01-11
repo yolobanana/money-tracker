@@ -40,6 +40,8 @@ model User {
   emailVerified DateTime?
   image         String?
 
+  passwordHash  String?
+
   accounts      Account[]
   sessions      Session[]
 
