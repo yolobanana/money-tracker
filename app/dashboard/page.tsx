@@ -23,7 +23,7 @@ export default async function DashboardPage({
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 py-4">
                     <SectionCards userId={user.id} />
                 </div>
-                <TransactionTable data={data} />
+                <TransactionTable {...data} />
             </h1>
         </div>
     );
