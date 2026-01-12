@@ -24,9 +24,7 @@ export default async function DashboardLayout({
             <SidebarProvider>
                 <AppSidebar user={user}>
                     <SidebarInset>
-                        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-                            <SidebarTrigger className="-ml-1" />
-                        </header>
+                        <header className="flex h-16 shrink-0 items-center gap-2 px-4"></header>
                         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                             <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                                 <div className="bg-muted/50 aspect-video rounded-xl" />
@@ -37,7 +35,10 @@ export default async function DashboardLayout({
                         </div>
                     </SidebarInset>
                 </AppSidebar>
-                <main className="flex-1 wrapper">{children}</main>
+                <main className="flex-1 wrapper p-4">
+                    <SidebarTrigger />
+                    {children}
+                </main>
             </SidebarProvider>
         </div>
     );
