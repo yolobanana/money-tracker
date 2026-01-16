@@ -13,6 +13,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,28 +23,25 @@ import {
 import { logout } from "@/app/actions/auth";
 import { useActionState } from "react";
 
-// This is sample data.
-const data = {
-    navMain: [
-        {
-            title: "Dashboard",
-            url: "#",
-            isactive: true,
-        },
-        {
-            title: "Transactions",
-            url: "/transactions",
-        },
-        {
-            title: "Wallets",
-            url: "/wallets",
-        },
-        {
-            title: "Categories",
-            url: "/categories",
-        },
-    ],
-};
+// Navigation items
+const navItems = [
+    {
+        title: "Dashboard",
+        url: "/dashboard",
+    },
+    {
+        title: "Transactions",
+        url: "/transactions",
+    },
+    {
+        title: "Wallets",
+        url: "/wallets",
+    },
+    {
+        title: "Categories",
+        url: "/categories",
+    },
+];
 
 export function AppSidebar({
     ...props
@@ -56,6 +54,7 @@ export function AppSidebar({
     };
 }) {
     const [_, handleSignout] = useActionState(logout, undefined);
+    const pathname = usePathname();
 
     return (
         <Sidebar variant="floating" {...props}>
@@ -81,11 +80,11 @@ export function AppSidebar({
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarMenu className="gap-2">
-                        {data.navMain.map((item) => (
+                        {navItems.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton
                                     asChild
-                                    isActive={item.isactive}
+                                    isActive={pathname === item.url || pathname.startsWith(item.url + "/")}
                                 >
                                     <Link
                                         href={item.url}

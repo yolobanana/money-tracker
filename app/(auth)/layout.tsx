@@ -1,6 +1,6 @@
 import { ModeToggle } from "@/components/shared/ModeToggle";
 
-export default function RootLayout({
+export default function AuthLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
