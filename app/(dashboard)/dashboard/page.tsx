@@ -2,7 +2,7 @@ import SectionCards from "@/components/section-cards";
 import TransactionTable from "@/components/transaction-table";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getTransactions } from "../actions/transaction";
+import { getTransactions } from "../../actions/transaction";
 
 export default async function DashboardPage({
     searchParams,

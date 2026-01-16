@@ -36,7 +36,7 @@ export default async function DashboardLayout({
                     </SidebarInset>
                 </AppSidebar>
                 <main className="flex-1 wrapper p-4">
-                    <SidebarTrigger />
+                    <SidebarTrigger className="cursor-pointer" />
                     {children}
                 </main>
             </SidebarProvider>
