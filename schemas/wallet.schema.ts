@@ -1,11 +1,17 @@
 import { z } from "zod";
-import { amountSchema } from "./common.schema";
 
 export const createWalletSchema = z.object({
   name: z.string().min(1).max(50),
-  initialBalance: amountSchema.default(0),
+  initialBalance: z.number().min(0).default(0),
 });
 
 export type CreateWalletInput = z.infer<
   typeof createWalletSchema
 >;
+
+export const updateWalletSchema = z.object({
+    name: z.string().min(1).max(50),
+    balance: z.number().min(0).default(0),
+});
+
+export type UpdateWalletInput = z.infer<typeof updateWalletSchema>;
