@@ -16,11 +16,31 @@ interface CategoryTableProps {
     data: CategoryWithExpenses[];
 }
 
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import { CategoryDialog } from "./CategoryDialog";
+import { useState } from "react";
+
+// ... imports
+
 export default function CategoryTable({ data }: CategoryTableProps) {
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
                 <CardTitle>Categories</CardTitle>
+                <CategoryDialog
+                    open={isCreateOpen}
+                    onOpenChange={setIsCreateOpen}
+                    categories={data}
+                    trigger={
+                        <Button size="sm">
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Category
+                        </Button>
+                    }
+                />
             </CardHeader>
             <CardContent>
                 <Table>
@@ -30,7 +50,7 @@ export default function CategoryTable({ data }: CategoryTableProps) {
                                 Category
                             </TableHead>
                             <TableHead>Type</TableHead>
-                            <TableHead>Expenses</TableHead>
+                            <TableHead>Amount</TableHead>
                             <TableHead className="w-[100px]">Action</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -49,6 +69,7 @@ export default function CategoryTable({ data }: CategoryTableProps) {
                                 <CategoryRow
                                     key={category.id}
                                     category={category}
+                                    categories={data}
                                 />
                             ))
                         )}

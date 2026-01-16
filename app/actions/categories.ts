@@ -84,3 +84,71 @@ export async function getCategoryTree(): Promise<CategoryWithExpenses[]> {
 
     return rootCategories;
 }
+
+import {
+    CreateCategorySchema,
+    CreateCategorySchemaType,
+} from "@/schemas/category";
+import { revalidatePath } from "next/cache";
+
+export async function createCategory(data: CreateCategorySchemaType) {
+    const user = await getCurrentUser();
+    if (!user) {
+        redirect("/");
+    }
+
+    const { name, type, parentId } = CreateCategorySchema.parse(data);
+
+    await prisma.category.create({
+        data: {
+            name,
+            type,
+            userId: user.id,
+            parentId: parentId || null,
+        },
+    });
+
+    revalidatePath("/categories");
+}
+
+export async function updateCategory(
+    id: string,
+    data: CreateCategorySchemaType
+) {
+    const user = await getCurrentUser();
+    if (!user) {
+        redirect("/");
+    }
+
+    const { name, type, parentId } = CreateCategorySchema.parse(data);
+
+    await prisma.category.update({
+        where: {
+            id,
+            userId: user.id,
+        },
+        data: {
+            name,
+            type,
+            parentId: parentId || null,
+        },
+    });
+
+    revalidatePath("/categories");
+}
+
+export async function deleteCategory(id: string) {
+    const user = await getCurrentUser();
+    if (!user) {
+        redirect("/");
+    }
+
+    await prisma.category.delete({
+        where: {
+            id,
+            userId: user.id,
+        },
+    });
+
+    revalidatePath("/categories");
+}

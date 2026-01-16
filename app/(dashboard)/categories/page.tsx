@@ -22,7 +22,9 @@ export default async function CategoryPage() {
                     chartData={chartData}
                 />
             </div>
-            <CategoryTable data={categories} />
+            <div className="max-w-screen">
+                <CategoryTable data={categories} />
+            </div>
         </div>
     );
 }

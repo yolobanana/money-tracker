@@ -6,13 +6,19 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { TableCell, TableRow } from "../ui/table";
 import { cn } from "@/lib/utils";
+import { CategoryDialog } from "./CategoryDialog";
 
 interface CategoryRowProps {
     category: CategoryWithExpenses;
+    categories: CategoryWithExpenses[];
     level?: number;
 }
 
-export function CategoryRow({ category, level = 0 }: CategoryRowProps) {
+export function CategoryRow({
+    category,
+    categories,
+    level = 0,
+}: CategoryRowProps) {
     const [isOpen, setIsOpen] = useState(false);
     const hasChildren = category.children && category.children.length > 0;
 
@@ -64,9 +70,19 @@ export function CategoryRow({ category, level = 0 }: CategoryRowProps) {
                     }).format(category.expenses)}
                 </TableCell>
                 <TableCell>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Edit className="h-4 w-4" />
-                    </Button>
+                    <CategoryDialog
+                        category={category}
+                        categories={categories}
+                        trigger={
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                            >
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        }
+                    />
                 </TableCell>
             </TableRow>
             {hasChildren && isOpen && (
@@ -75,6 +91,7 @@ export function CategoryRow({ category, level = 0 }: CategoryRowProps) {
                         <CategoryRow
                             key={child.id}
                             category={child}
+                            categories={categories}
                             level={level + 1}
                         />
                     ))}
