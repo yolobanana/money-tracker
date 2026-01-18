@@ -34,9 +34,12 @@ export async function getTransactions(
         category: t.category,
     }));
 
+    const totalPages = Math.ceil(total / pageSize);
+
     return {
         transactions: mappedTransactions,
         total,
+        totalPages,
         page,
         pageSize,
     };
