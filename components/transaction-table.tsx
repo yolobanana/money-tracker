@@ -22,11 +22,6 @@ import AddTransactionDialog from "./shared/AddTransactionDialog";
 export default function TransactionTable(data: TransactionPage) {
     return (
         <>
-            {" "}
-            <div className="py-4">Your Transactions</div>
-            <div className="flex justify-end pb-4">
-                <AddTransactionDialog />
-            </div>
             <Card>
                 <CardContent>
                     <Table>
@@ -94,10 +89,10 @@ export default function TransactionTable(data: TransactionPage) {
                                 )}
                                 <PaginationItem>
                                     <PaginationLink href="#">
-                                        Page {data.page} of {data.pageSize}
+                                        Page {data.page} of {data.totalPages}
                                     </PaginationLink>
                                 </PaginationItem>
-                                {data.page < data.pageSize && (
+                                {data.page < data.totalPages && (
                                     <PaginationItem>
                                         <PaginationNext
                                             href={`/dashboard?page=${

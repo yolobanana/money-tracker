@@ -85,6 +85,22 @@ export async function getCategoryTree(): Promise<CategoryWithExpenses[]> {
     return rootCategories;
 }
 
+export async function getCategories() {
+    const user = await getCurrentUser();
+    if (!user) {
+        redirect("/");
+    }
+
+    return await prisma.category.findMany({
+        where: {
+            userId: user.id,
+        },
+        orderBy: {
+            name: "asc",
+        },
+    });
+}
+
 import {
     CreateCategorySchema,
     CreateCategorySchemaType,
@@ -109,6 +125,7 @@ export async function createCategory(data: CreateCategorySchemaType) {
     });
 
     revalidatePath("/categories");
+    revalidatePath("/dashboard");
 }
 
 export async function updateCategory(

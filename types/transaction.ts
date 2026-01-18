@@ -9,6 +9,7 @@ export type TransactionPage = {
         category: { name: string } | null;
     }[];
     total: number;
+    totalPages: number;
     page: number;
     pageSize: number;
 };

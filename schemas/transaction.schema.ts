@@ -3,19 +3,33 @@ import { amountSchema, dateSchema } from "./common.schema";
 
 export const transactionTypeEnum = z.enum([
   "INCOME",
-  "OUTCOME",
+  "EXPENSE",
   "TRANSFER",
 ]);
 
-export const createTransactionSchema = z.object({
-  name: z.string().min(1).max(100),
-  amount: amountSchema,
-  type: transactionTypeEnum,
-  categoryId: z.string().cuid(),
-  walletId: z.string().cuid(),
-  date: dateSchema,
-  isCounted: z.boolean().default(true),
+const baseTransactionSchema = z.object({
+    amount: amountSchema,
+    date: dateSchema,
+    description: z.string().optional(),
 });
+
+export const createTransactionSchema = z.discriminatedUnion("type", [
+    baseTransactionSchema.extend({
+        type: z.literal("INCOME"),
+        categoryId: z.string().cuid(),
+        walletId: z.string().cuid(),
+    }),
+    baseTransactionSchema.extend({
+        type: z.literal("EXPENSE"),
+        categoryId: z.string().cuid(),
+        walletId: z.string().cuid(),
+    }),
+    baseTransactionSchema.extend({
+        type: z.literal("TRANSFER"),
+        walletId: z.string().cuid(), // Source Wallet
+        destinationWalletId: z.string().cuid(), // Destination Wallet
+    }),
+]);
 
 export type CreateTransactionInput = z.infer<
   typeof createTransactionSchema
