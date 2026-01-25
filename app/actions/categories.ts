@@ -67,16 +67,15 @@ export async function getCategoryTree(): Promise<CategoryWithExpenses[]> {
     const rootCategories: CategoryWithExpenses[] = [];
 
     // Second pass: link children to parents
+    // Second pass: link children to parents and aggregate totals
     categoryMap.forEach((cat) => {
         if (cat.parentId && categoryMap.has(cat.parentId)) {
             const parent = categoryMap.get(cat.parentId)!;
-            // Limit to 1 level deep as requested?
-            // The user said "I will only allow one level deep for the subcategory"
-            // This logic builds a full tree if the data supports it, but since the UI
-            // and business logic might enforce 1 level deep, this is safe.
-            // If we strictly want to flattening anything deeper than level 1, we could check depth here.
-            // Assuming data integrity is maintained elsewhere, simple linking is fine.
             parent.children!.push(cat);
+
+            // Add child totals to parent
+            parent.expenses += cat.expenses;
+            parent.income += cat.income;
         } else {
             rootCategories.push(cat);
         }
