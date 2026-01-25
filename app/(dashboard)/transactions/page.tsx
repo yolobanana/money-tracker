@@ -1,8 +1,12 @@
 import { getCategories } from "@/app/actions/categories";
 import { getTransactions } from "@/app/actions/transaction";
 import { getWallets } from "@/app/actions/wallets";
+import { getMonthlyTransactionStats } from "@/app/actions/stats";
 import AddTransactionDialog from "@/components/shared/AddTransactionDialog";
 import TransactionTable from "@/components/transaction-table";
+import { TransactionSummaryCards } from "@/components/transactions/TransactionSummaryCards";
+import { IncomeExpenseChart } from "@/components/transactions/IncomeExpenseChart";
+import { MonthlyTrendChart } from "@/components/transactions/MonthlyTrendChart";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -16,9 +20,14 @@ export default async function TransactionsPage({
         redirect("/");
     }
     const page = Number(searchParams.page) || 1;
-    const data = await getTransactions(page, 10, user.id);
-    const wallets = await getWallets();
-    const categoriesData = await getCategories();
+
+    const [data, wallets, categoriesData, monthlyStats] = await Promise.all([
+        getTransactions(page, 10, user.id),
+        getWallets(),
+        getCategories(),
+        getMonthlyTransactionStats(user.id),
+    ]);
+
     const categories = categoriesData.map((c) => ({
         ...c,
         createdAt: c.createdAt.toISOString(),
@@ -36,14 +45,31 @@ export default async function TransactionsPage({
                         Manage your transactions and view spending analysis.
                     </p>
                 </div>
+                <AddTransactionDialog
+                    wallets={wallets}
+                    categories={categories}
+                />
             </div>
+
+            {/* Summary Cards */}
+            <TransactionSummaryCards
+                totalIncome={monthlyStats.totalIncome}
+                totalExpenses={monthlyStats.totalExpenses}
+                net={monthlyStats.net}
+                transactionCount={monthlyStats.transactionCount}
+            />
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <IncomeExpenseChart
+                    income={monthlyStats.totalIncome}
+                    expenses={monthlyStats.totalExpenses}
+                />
+                <MonthlyTrendChart data={monthlyStats.dailyTrend} />
+            </div>
+
+            {/* Transaction Table */}
             <div className="max-w-screen">
-                <div className="flex justify-start pb-4">
-                    <AddTransactionDialog
-                        wallets={wallets}
-                        categories={categories}
-                    />
-                </div>
                 <TransactionTable
                     data={data}
                     wallets={wallets}
