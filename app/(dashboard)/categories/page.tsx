@@ -14,7 +14,17 @@ export default async function CategoryPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Categories</h1>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">
+                        Categories
+                    </h1>
+                    <p className="text-muted-foreground">
+                        Manage your categories and view spending analysis by its
+                        category.
+                    </p>
+                </div>
+            </div>
             <div className="max-w-screen">
                 <BlockChart
                     title="Expenses by Category"

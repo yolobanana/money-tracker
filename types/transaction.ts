@@ -5,6 +5,8 @@ export type TransactionPage = {
         amount: number;
         type: string;
         date: Date;
+        walletId: string;
+        categoryId: string | null;
         wallet: { name: string };
         category: { name: string } | null;
     }[];

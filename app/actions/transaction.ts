@@ -30,6 +30,8 @@ export async function getTransactions(
         amount: t.amount.toNumber(),
         type: String(t.type),
         date: t.date,
+        walletId: t.walletId,
+        categoryId: t.categoryId,
         wallet: t.wallet,
         category: t.category,
     }));
