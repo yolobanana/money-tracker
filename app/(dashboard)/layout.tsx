@@ -19,7 +19,7 @@ export default async function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen flex-col">
+        <div className="flex min-h-screen w-full flex-col">
             <ModeToggle />
             <SidebarProvider>
                 <AppSidebar user={user}>
@@ -35,7 +35,7 @@ export default async function DashboardLayout({
                         </div>
                     </SidebarInset>
                 </AppSidebar>
-                <main className="flex-1 wrapper p-4">
+                <main className="flex-1 wrapper p-4 mb-8">
                     <SidebarTrigger className="cursor-pointer" />
                     {children}
                 </main>

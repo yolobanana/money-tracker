@@ -46,7 +46,7 @@ export default async function DashboardPage({
                     categories={categories}
                 />
             </div>
-            <TransactionTable {...data} />
+            <TransactionTable data={data} />
         </div>
     );
 }

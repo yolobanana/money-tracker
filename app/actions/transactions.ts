@@ -154,3 +154,68 @@ export async function createTransaction(data: CreateTransactionInput) {
       throw new Error("Failed to create transaction");
   }
 }
+
+export async function deleteTransaction(id: string) {
+    const user = await getCurrentUser();
+    if (!user) {
+        redirect("/sign-in");
+    }
+
+    try {
+        const transaction = await prisma.transaction.findUnique({
+            where: { id, userId: user.id },
+        });
+
+        if (!transaction) {
+            throw new Error("Transaction not found");
+        }
+
+        const { type, amount, walletId } = transaction;
+
+        // Reverse the balance change based on transaction type
+        if (type === "EXPENSE") {
+            await prisma.$transaction([
+                prisma.wallet.update({
+                    where: { id: walletId },
+                    data: { balance: { increment: amount } },
+                }),
+                prisma.transaction.delete({ where: { id } }),
+            ]);
+        } else if (type === "INCOME") {
+            await prisma.$transaction([
+                prisma.wallet.update({
+                    where: { id: walletId },
+                    data: { balance: { decrement: amount } },
+                }),
+                prisma.transaction.delete({ where: { id } }),
+            ]);
+        } else if (type === "TRANSFER") {
+            const isOut = transaction.name.startsWith("Transfer to");
+            await prisma.$transaction([
+                prisma.wallet.update({
+                    where: { id: walletId },
+                    data: {
+                        balance: { [isOut ? "increment" : "decrement"]: amount },
+                    },
+                }),
+                prisma.transaction.delete({ where: { id } }),
+            ]);
+        }
+
+        revalidatePath("/transactions");
+        revalidatePath("/dashboard");
+        revalidatePath("/wallets");
+    } catch (error) {
+        console.error("Failed to delete transaction", error);
+        throw new Error("Failed to delete transaction");
+    }
+}
+
+export async function updateTransaction(
+    id: string,
+    data: CreateTransactionInput
+) {
+    // Delete old transaction (reversing balance) and create new one
+    await deleteTransaction(id);
+    await createTransaction(data);
+}
