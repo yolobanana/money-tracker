@@ -1,5 +1,8 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { StatisticData } from "@/types/statistic-data";
+import { getStartOfMonthUTC7, getEndOfMonthUTC7 } from "@/lib/date-utils";
 
 export async function getStatisticsData(userId: string): Promise<StatisticData> {
     const totalBalance = await prisma.wallet.aggregate({
@@ -69,10 +72,19 @@ export interface MonthlyTransactionStats {
     dailyTrend: { date: string; income: number; expenses: number }[];
 }
 
-export async function getMonthlyTransactionStats(userId: string): Promise<MonthlyTransactionStats> {
+export async function getMonthlyTransactionStats(
+    userId: string,
+    year?: number,
+    month?: number
+): Promise<MonthlyTransactionStats> {
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    // Adjust for UTC+7
+    const utc7Now = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    const targetYear = year ?? utc7Now.getUTCFullYear();
+    const targetMonth = month ?? utc7Now.getUTCMonth() + 1; // 1-indexed month
+
+    const startOfMonth = getStartOfMonthUTC7(targetYear, targetMonth);
+    const endOfMonth = getEndOfMonthUTC7(targetYear, targetMonth);
 
     const [incomeResult, expenseResult, transactions] = await Promise.all([
         prisma.transaction.aggregate({
@@ -113,15 +125,21 @@ export async function getMonthlyTransactionStats(userId: string): Promise<Monthl
     const dailyMap = new Map<string, { income: number; expenses: number }>();
 
     // Initialize all days of the month
-    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
     for (let i = 1; i <= daysInMonth; i++) {
-        const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const dateStr = `${targetYear}-${String(targetMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
         dailyMap.set(dateStr, { income: 0, expenses: 0 });
     }
 
     // Aggregate transaction amounts by date
     for (const tx of transactions) {
-        const dateStr = tx.date.toISOString().split('T')[0];
+        // Convert transaction date to UTC+7 for proper date string
+        const txDateUTC7 = new Date(tx.date.getTime() + 7 * 60 * 60 * 1000);
+        const year = txDateUTC7.getUTCFullYear();
+        const month = String(txDateUTC7.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(txDateUTC7.getUTCDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+
         const existing = dailyMap.get(dateStr) || { income: 0, expenses: 0 };
         if (tx.type === 'INCOME') {
             existing.income += Number(tx.amount);

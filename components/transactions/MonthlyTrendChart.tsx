@@ -32,9 +32,10 @@ function formatCurrency(value: number) {
 
 export function MonthlyTrendChart({ data }: MonthlyTrendChartProps) {
     // Format date labels to show just the day number
+    // Extract day directly from date string (YYYY-MM-DD) to avoid timezone issues
     const formattedData = data.map((item) => ({
         ...item,
-        day: new Date(item.date).getDate().toString(),
+        day: item.date.split("-")[2].replace(/^0/, ""), // Remove leading zero
     }));
 
     const hasData = data.some((d) => d.income > 0 || d.expenses > 0);
@@ -61,8 +62,8 @@ export function MonthlyTrendChart({ data }: MonthlyTrendChartProps) {
                                     value >= 1000000
                                         ? `${(value / 1000000).toFixed(0)}M`
                                         : value >= 1000
-                                        ? `${(value / 1000).toFixed(0)}K`
-                                        : value
+                                          ? `${(value / 1000).toFixed(0)}K`
+                                          : value
                                 }
                             />
                             <Tooltip
