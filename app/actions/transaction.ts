@@ -1,16 +1,39 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { TransactionPage } from "@/types/transaction";
+import { getStartOfMonthUTC7, getEndOfMonthUTC7 } from "@/lib/date-utils";
 
 export async function getTransactions(
     page = 1,
     pageSize = 10,
-    userId: string
+    userId: string,
+    year?: number,
+    month?: number
 ): Promise<TransactionPage> {
     const skip = (page - 1) * pageSize;
 
+    // Default to current month if not provided (using UTC+7)
+    const now = new Date();
+    // Adjust for UTC+7
+    const utc7Now = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    const targetYear = year ?? utc7Now.getUTCFullYear();
+    const targetMonth = month ?? utc7Now.getUTCMonth() + 1; // 1-indexed month
+
+    const startOfMonth = getStartOfMonthUTC7(targetYear, targetMonth);
+    const endOfMonth = getEndOfMonthUTC7(targetYear, targetMonth);
+
+    const whereClause = {
+        userId: userId,
+        date: {
+            gte: startOfMonth,
+            lt: endOfMonth,
+        },
+    };
+
     const [transactions, total] = await Promise.all([
         prisma.transaction.findMany({
-            where: { userId: userId },
+            where: whereClause,
             orderBy: { date: "desc" },
             skip,
             take: pageSize,
@@ -20,7 +43,7 @@ export async function getTransactions(
             },
         }),
         prisma.transaction.count({
-            where: { userId: userId },
+            where: whereClause,
         }),
     ]);
 

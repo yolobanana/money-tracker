@@ -29,24 +29,30 @@ export default function TransactionTable({
     wallets = [],
     categories = [],
     canEdit = false,
+    onPageChange,
 }: {
     data: TransactionPage;
     wallets?: SerializedWallet[];
     categories?: SerializedCategory[];
     canEdit?: boolean;
+    onPageChange?: (page: number) => void;
 }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const navigateToPage = (page: number) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", page.toString());
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
-        router.refresh();
+        if (onPageChange) {
+            // Use callback if provided (for useState-based pagination)
+            onPageChange(page);
+        } else {
+            // Fall back to URL-based navigation
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("page", page.toString());
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
+            router.refresh();
+        }
     };
-
-    console.log("page:", data.page);
 
     return (
         <>
