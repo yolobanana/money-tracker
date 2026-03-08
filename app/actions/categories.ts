@@ -5,10 +5,19 @@ import { prisma } from "@/lib/prisma";
 import { CategoryWithExpenses, ParentCategoryWithExpenses } from "@/types/category";
 import { redirect } from "next/navigation";
 
-export async function getCategoryTree(): Promise<CategoryWithExpenses[]> {
+export async function getCategoryTree(year?: number, month?: number): Promise<CategoryWithExpenses[]> {
     const user = await getCurrentUser();
     if (!user) {
         redirect("/");
+    }
+
+    const transactionWhereClause: any = {};
+
+    if (year && month) {
+        transactionWhereClause.date = {
+            gte: new Date(year, month - 1, 1),
+            lt: new Date(year, month, 1),
+        };
     }
 
     const categories = await prisma.category.findMany({
@@ -17,6 +26,7 @@ export async function getCategoryTree(): Promise<CategoryWithExpenses[]> {
         },
         include: {
             transactions: {
+                where: transactionWhereClause,
                 select: {
                     type: true,
                     amount: true,
