@@ -15,6 +15,7 @@ import AddTransactionDialog from "@/components/shared/AddTransactionDialog";
 import { TransactionPage } from "@/types/transaction";
 import { SerializedWallet } from "@/types/wallet";
 import { SerializedCategory } from "@/types/category";
+import { useDateFilterStore } from "@/store/useDateFilterStore";
 
 interface TransactionsClientProps {
     initialData: TransactionPage;
@@ -31,9 +32,7 @@ export function TransactionsClient({
     categories,
     userId,
 }: TransactionsClientProps) {
-    const now = new Date();
-    const [month, setMonth] = useState(now.getMonth() + 1); // 1-indexed
-    const [year, setYear] = useState(now.getFullYear());
+    const { month, year, setMonthYear } = useDateFilterStore();
     const [page, setPage] = useState(1);
     const [data, setData] = useState<TransactionPage>(initialData);
     const [stats, setStats] = useState<MonthlyTransactionStats>(initialStats);
@@ -42,10 +41,17 @@ export function TransactionsClient({
 
     // Fetch data when month/year/page changes
     useEffect(() => {
-        // Skip only on initial render since we already have initialData
+        // Skip only on initial render if it matches current date
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return;
+            const now = new Date();
+            if (
+                month === now.getMonth() + 1 &&
+                year === now.getFullYear() &&
+                page === 1
+            ) {
+                return;
+            }
         }
 
         startTransition(async () => {
@@ -59,8 +65,7 @@ export function TransactionsClient({
     }, [month, year, page, userId]);
 
     const handleMonthChange = (newMonth: number, newYear: number) => {
-        setMonth(newMonth);
-        setYear(newYear);
+        setMonthYear(newMonth, newYear);
         setPage(1); // Reset to first page when changing month
     };
 
