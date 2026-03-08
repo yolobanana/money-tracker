@@ -1,32 +1,41 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { getCategoryTree } from "@/app/actions/categories";
 import { MonthSelector } from "@/components/transactions/MonthSelector";
 import CategoryTable from "@/components/CategoryTable";
 import { BlockChart } from "@/components/shared/BlockChart";
 import { CategoryWithExpenses } from "@/types/category";
+import { useDateFilterStore } from "@/store/useDateFilterStore";
 
 interface CategoriesClientProps {
     initialCategories: CategoryWithExpenses[];
 }
 
 export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
-    const now = new Date();
-    const [month, setMonth] = useState(now.getMonth() + 1);
-    const [year, setYear] = useState(now.getFullYear());
+    const { month, year, setMonthYear } = useDateFilterStore();
     const [categories, setCategories] =
         useState<CategoryWithExpenses[]>(initialCategories);
     const [isPending, startTransition] = useTransition();
+    const isFirstRender = useRef(true);
 
-    const handleMonthChange = (newMonth: number, newYear: number) => {
-        setMonth(newMonth);
-        setYear(newYear);
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            const now = new Date();
+            if (month === now.getMonth() + 1 && year === now.getFullYear()) {
+                return;
+            }
+        }
 
         startTransition(async () => {
-            const newCategories = await getCategoryTree(newYear, newMonth);
+            const newCategories = await getCategoryTree(year, month);
             setCategories(newCategories);
         });
+    }, [month, year]);
+
+    const handleMonthChange = (newMonth: number, newYear: number) => {
+        setMonthYear(newMonth, newYear);
     };
 
     const chartData = categories
