@@ -130,18 +130,27 @@ export async function getCategoryStats() {
     return data.sort((a, b) => b.value - a.value);
 }
 
-export async function getWalletStats() {
+export async function getWalletStats(year?: number, month?: number) {
     const user = await getCurrentUser();
     if (!user) {
         redirect("/sign-in");
     }
 
+    const whereClause: any = {
+        userId: user.id,
+        type: "EXPENSE",
+    };
+
+    if (year && month) {
+        whereClause.date = {
+            gte: new Date(year, month - 1, 1),
+            lt: new Date(year, month, 1),
+        };
+    }
+
     const stats = await prisma.transaction.groupBy({
         by: ["walletId", "type"],
-        where: {
-            userId: user.id,
-            type: "EXPENSE",
-        },
+        where: whereClause,
         _sum: {
             amount: true,
         },
