@@ -16,8 +16,6 @@ export default async function TransactionsPage() {
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
-    console.log("currentMonth", currentMonth);
-    console.log("currentYear", currentYear);
 
     const [data, wallets, categoriesData, monthlyStats] = await Promise.all([
         getTransactions(1, 10, user.id, currentYear, currentMonth),

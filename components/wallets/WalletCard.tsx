@@ -59,9 +59,10 @@ export function WalletCard({ wallet }: WalletCardProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">
-                        {Number(wallet.balance).toLocaleString("en-US", {
+                        {Number(wallet.balance).toLocaleString("id-ID", {
                             style: "currency",
-                            currency: "USD",
+                            currency: "IDR",
+                            maximumFractionDigits: 0,
                         })}
                     </div>
                     <p className="text-xs text-muted-foreground">
