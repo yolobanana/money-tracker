@@ -22,26 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/app/actions/auth";
 import { useActionState } from "react";
-
-// Navigation items
-const navItems = [
-    {
-        title: "Dashboard",
-        url: "/dashboard",
-    },
-    {
-        title: "Transactions",
-        url: "/transactions",
-    },
-    {
-        title: "Wallets",
-        url: "/wallets",
-    },
-    {
-        title: "Categories",
-        url: "/categories",
-    },
-];
+import { navItems } from "@/components/shared/nav-items";
 
 export function AppSidebar({
     ...props
@@ -90,6 +71,7 @@ export function AppSidebar({
                                         href={item.url}
                                         className="font-medium"
                                     >
+                                        <item.icon />
                                         {item.title}
                                     </Link>
                                 </SidebarMenuButton>

@@ -1,5 +1,6 @@
 import { ModeToggle } from "@/components/shared/ModeToggle";
 import { AppSidebar } from "@/components/shared/Sidebar";
+import { MobileNav } from "@/components/shared/MobileNav";
 import {
     SidebarInset,
     SidebarProvider,
@@ -23,13 +24,14 @@ export default async function DashboardLayout({
             <AppSidebar user={user} />
             <SidebarInset>
                 <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-3 backdrop-blur sm:h-16 sm:px-4">
-                    <SidebarTrigger className="cursor-pointer" />
+                    <SidebarTrigger className="hidden cursor-pointer md:flex" />
                     <span className="font-semibold">Money Tracker</span>
                 </header>
-                <main className="flex-1 p-3 pb-24 sm:p-4 sm:pb-8">
+                <main className="flex-1 p-3 pb-28 sm:p-4 sm:pb-8">
                     {children}
                 </main>
             </SidebarInset>
+            <MobileNav />
             <ModeToggle />
         </SidebarProvider>
     );
