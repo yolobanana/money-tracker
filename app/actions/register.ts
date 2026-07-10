@@ -45,5 +45,5 @@ export async function registerUser(
         },
     });
 
-    redirect(`/?email=${encodeURIComponent(email)}`);
+    redirect(`/login?email=${encodeURIComponent(email)}`);
 }

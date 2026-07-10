@@ -31,24 +31,24 @@ function SubmitButton() {
     );
 }
 
+interface RegisterFormProps extends React.ComponentProps<"div"> {
+    /** Render without the outer Card (e.g. inside a dialog). */
+    embedded?: boolean;
+    /** When provided, the "Login" link switches mode instead of navigating. */
+    onSwitchToLogin?: () => void;
+}
+
 export function RegisterForm({
     className,
+    embedded = false,
+    onSwitchToLogin,
     ...props
-}: React.ComponentProps<"div">) {
+}: RegisterFormProps) {
     const [state, action] = useActionState(registerUser, {});
     const { pending: isPending } = useFormStatus();
 
-    return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Create an account</CardTitle>
-                    <CardDescription>
-                        Enter your details below to create your account
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form action={action}>
+    const formBody = (
+        <form action={action}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -95,17 +95,46 @@ export function RegisterForm({
 
                                 <FieldDescription className="text-center">
                                     Already have an account?{" "}
-                                    <Link
-                                        href="/login"
-                                        className="underline underline-offset-4"
-                                    >
-                                        Login
-                                    </Link>
+                                    {onSwitchToLogin ? (
+                                        <button
+                                            type="button"
+                                            onClick={onSwitchToLogin}
+                                            className="underline underline-offset-4"
+                                        >
+                                            Login
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href="/login"
+                                            className="underline underline-offset-4"
+                                        >
+                                            Login
+                                        </Link>
+                                    )}
                                 </FieldDescription>
                             </Field>
                         </FieldGroup>
                     </form>
-                </CardContent>
+    );
+
+    if (embedded) {
+        return (
+            <div className={cn("flex flex-col gap-6", className)} {...props}>
+                {formBody}
+            </div>
+        );
+    }
+
+    return (
+        <div className={cn("flex flex-col gap-6", className)} {...props}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Create an account</CardTitle>
+                    <CardDescription>
+                        Enter your details below to create your account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>{formBody}</CardContent>
             </Card>
         </div>
     );
