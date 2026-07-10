@@ -20,10 +20,19 @@ import { signInWithCredentials, signInWithGoogle } from "@/app/actions/auth";
 import Link from "next/link";
 import React, { useState, useTransition } from "react";
 
+interface LoginFormProps extends React.ComponentProps<"div"> {
+    /** Render without the outer Card (e.g. inside a dialog). */
+    embedded?: boolean;
+    /** When provided, the "Register" link switches mode instead of navigating. */
+    onSwitchToRegister?: () => void;
+}
+
 export function LoginForm({
     className,
+    embedded = false,
+    onSwitchToRegister,
     ...props
-}: React.ComponentProps<"div">) {
+}: LoginFormProps) {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
 
@@ -48,17 +57,8 @@ export function LoginForm({
         });
     }
 
-    return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Login to your account</CardTitle>
-                    <CardDescription>
-                        Enter your email below to login to your account
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit}>
+    const formBody = (
+        <form onSubmit={handleSubmit}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -111,17 +111,46 @@ export function LoginForm({
                                 </Button>
                                 <FieldDescription className="text-center">
                                     Don&apos;t have an account?{" "}
-                                    <Link
-                                        href="/register"
-                                        className="underline underline-offset-4"
-                                    >
-                                        Register
-                                    </Link>
+                                    {onSwitchToRegister ? (
+                                        <button
+                                            type="button"
+                                            onClick={onSwitchToRegister}
+                                            className="underline underline-offset-4"
+                                        >
+                                            Register
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href="/register"
+                                            className="underline underline-offset-4"
+                                        >
+                                            Register
+                                        </Link>
+                                    )}
                                 </FieldDescription>
                             </Field>
                         </FieldGroup>
                     </form>
-                </CardContent>
+    );
+
+    if (embedded) {
+        return (
+            <div className={cn("flex flex-col gap-6", className)} {...props}>
+                {formBody}
+            </div>
+        );
+    }
+
+    return (
+        <div className={cn("flex flex-col gap-6", className)} {...props}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Login to your account</CardTitle>
+                    <CardDescription>
+                        Enter your email below to login to your account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>{formBody}</CardContent>
             </Card>
         </div>
     );
