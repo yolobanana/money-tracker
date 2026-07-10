@@ -6,8 +6,10 @@ export default async function WalletsPage() {
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    const wallets = await getWallets();
-    const stats = await getWalletStats(currentYear, currentMonth);
+    const [wallets, stats] = await Promise.all([
+        getWallets(),
+        getWalletStats(currentYear, currentMonth),
+    ]);
 
     return <WalletsClient wallets={wallets} initialStats={stats} />;
 }

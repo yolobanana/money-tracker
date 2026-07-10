@@ -18,9 +18,13 @@ export default async function DashboardPage({
     }
     const { page: pageParam } = await searchParams;
     const page = Number(pageParam) || 1;
-    const data = await getTransactions(page, 10, user.id);
-    const wallets = await getWallets();
-    const categoriesData = await getCategories();
+    // Fetch in parallel — these requests are independent, so awaiting them
+    // one after another needlessly slowed down navigation to the dashboard.
+    const [data, wallets, categoriesData] = await Promise.all([
+        getTransactions(page, 10, user.id),
+        getWallets(),
+        getCategories(),
+    ]);
 
     // Serialize categories for client component
     const categories = categoriesData.map((c) => ({

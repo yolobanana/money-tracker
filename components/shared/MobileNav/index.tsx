@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { navItems } from "@/components/shared/nav-items";
+import { NavPendingIndicator } from "@/components/shared/NavPendingIndicator";
 
 export function MobileNav() {
     const pathname = usePathname();
@@ -33,12 +34,15 @@ export function MobileNav() {
                                     : "text-muted-foreground hover:text-foreground",
                             )}
                         >
-                            <Icon
-                                className={cn(
-                                    "size-5 transition-transform",
-                                    isActive && "scale-110",
-                                )}
-                            />
+                            <span className="relative flex items-center justify-center">
+                                <Icon
+                                    className={cn(
+                                        "size-5 transition-transform",
+                                        isActive && "scale-110",
+                                    )}
+                                />
+                                <NavPendingIndicator className="absolute size-4" />
+                            </span>
                             <span className="leading-none">{item.title}</span>
                         </Link>
                     );

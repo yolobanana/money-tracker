@@ -23,6 +23,7 @@ import {
 import { logout } from "@/app/actions/auth";
 import { useActionState } from "react";
 import { navItems } from "@/components/shared/nav-items";
+import { NavPendingIndicator } from "@/components/shared/NavPendingIndicator";
 
 export function AppSidebar({
     ...props
@@ -73,6 +74,7 @@ export function AppSidebar({
                                     >
                                         <item.icon />
                                         {item.title}
+                                        <NavPendingIndicator className="ml-auto" />
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
