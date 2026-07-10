@@ -10,13 +10,14 @@ import AddTransactionDialog from "@/components/shared/AddTransactionDialog";
 export default async function DashboardPage({
     searchParams,
 }: {
-    searchParams: { page: string };
+    searchParams: Promise<{ page?: string }>;
 }) {
     const user = await getCurrentUser();
     if (!user) {
         redirect("/");
     }
-    const page = Number(searchParams.page) || 1;
+    const { page: pageParam } = await searchParams;
+    const page = Number(pageParam) || 1;
     const data = await getTransactions(page, 10, user.id);
     const wallets = await getWallets();
     const categoriesData = await getCategories();
@@ -31,16 +32,16 @@ export default async function DashboardPage({
     return (
         <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
-                <h1 className="text-2xl font-bold">
+                <h1 className="text-xl font-bold sm:text-2xl">
                     Welcome to your dashboard, {user.name}!
                 </h1>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 py-4">
+            <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-3">
                 <SectionCards userId={user.id} />
             </div>
-            <div className="py-4">Your Transactions</div>
-            <div className="flex justify-start pb-4">
+            <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-lg font-semibold">Your Transactions</h2>
                 <AddTransactionDialog
                     wallets={wallets}
                     categories={categories}

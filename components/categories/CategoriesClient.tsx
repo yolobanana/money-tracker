@@ -47,17 +47,17 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
 
     return (
         <div className="space-y-6 relative">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
+                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                         Categories
                     </h1>
-                    <p className="text-muted-foreground">
+                    <p className="text-sm text-muted-foreground sm:text-base">
                         Manage your categories and view spending analysis by its
                         category.
                     </p>
                 </div>
-                <div className="flex items-center gap-3 self-start mt-2 md:mt-0">
+                <div className="flex items-center gap-3 self-start">
                     <MonthSelector
                         currentMonth={month}
                         currentYear={year}

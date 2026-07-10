@@ -69,12 +69,20 @@ export default function TransactionTable({
                                 <TableHead className="w-[250px]">
                                     Name
                                 </TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Wallet</TableHead>
-                                <TableHead>Amount</TableHead>
-                                <TableHead>Date</TableHead>
+                                <TableHead className="hidden md:table-cell">
+                                    Category
+                                </TableHead>
+                                <TableHead className="hidden lg:table-cell">
+                                    Wallet
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    Amount
+                                </TableHead>
+                                <TableHead className="hidden sm:table-cell">
+                                    Date
+                                </TableHead>
                                 {canEdit && (
-                                    <TableHead className="w-[100px]">
+                                    <TableHead className="w-[60px] text-right">
                                         Action
                                     </TableHead>
                                 )}
@@ -86,23 +94,30 @@ export default function TransactionTable({
                                 data.transactions.map((transaction) => (
                                     <TableRow key={transaction.id}>
                                         <TableCell className="font-medium">
-                                            {transaction.name}
+                                            <div>{transaction.name}</div>
+                                            {/* Secondary info shown inline on small screens */}
+                                            <div className="mt-0.5 text-xs text-muted-foreground md:hidden">
+                                                {transaction.category?.name}
+                                                {transaction.category?.name &&
+                                                    " · "}
+                                                {transaction.date.toLocaleDateString()}
+                                            </div>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="hidden md:table-cell">
                                             {transaction.category?.name}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="hidden lg:table-cell">
                                             {transaction.wallet.name}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-right tabular-nums">
                                             Rp
                                             {transaction.amount.toLocaleString()}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="hidden sm:table-cell">
                                             {transaction.date.toLocaleDateString()}
                                         </TableCell>
                                         {canEdit && (
-                                            <TableCell>
+                                            <TableCell className="text-right">
                                                 <EditTransactionDialog
                                                     transaction={transaction}
                                                     wallets={wallets}

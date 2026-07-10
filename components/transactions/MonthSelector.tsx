@@ -72,7 +72,7 @@ export function MonthSelector({
 
     return (
         <Select value={currentValue} onValueChange={handleChange}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full sm:w-[200px]">
                 <CalendarDays className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Select month" />
             </SelectTrigger>

@@ -43,10 +43,10 @@ export function WalletsClient({ wallets, initialStats }: WalletsClientProps) {
         <div className="flex flex-col gap-8 relative">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
+                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                         Wallets
                     </h1>
-                    <p className="text-muted-foreground">
+                    <p className="text-sm text-muted-foreground sm:text-base">
                         Manage your wallets and view spending analysis.
                     </p>
                     <div className="pt-2">
